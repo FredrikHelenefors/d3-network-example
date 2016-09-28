@@ -9,5 +9,9 @@
   "keywords": [],
   "author": "Hristo Enev",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-ui-router": "^0.3.1",
+    "d3": "^4.2.6"
+  }
 }

@@ -6,7 +6,8 @@ A d3js graph based on [Mike Bostock’s force-directed graph](https://bl.ocks.or
 
 ### References:
 
-* [D3js](https://d3js.org/)
+* [D3.js](https://d3js.org/)
+* [d3-force](https://github.com/d3/d3-force/blob/master/README.md#forceSimulation)
 * [Mike Bostock’s Force-Directed Graph](https://bl.ocks.org/mbostock/4062045)
 * [AngularJS](https://angularjs.org/)
 
