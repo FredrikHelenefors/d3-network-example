@@ -8,5 +8,9 @@
     GraphController.$inject = [];
     function GraphController() {
         var vm = this;
+
+        vm.simulationParams = {
+            lineDistance: 30
+        };
     }
 }());

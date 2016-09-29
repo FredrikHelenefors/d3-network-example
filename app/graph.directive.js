@@ -5,11 +5,13 @@
         .module('heGraph')
         .directive('heGraph', GraphDirective);
 
-    GraphDirective.$inject = [];
-    function GraphDirective() {
+    GraphDirective.$inject = ['$timeout'];
+    function GraphDirective($timeout) {
         var directive = {
             link: link,
-            scope: {}
+            scope: {
+                simulationParams: '<'
+            }
         };
 
         return directive;
@@ -22,7 +24,7 @@
             var color = d3.scaleOrdinal(d3.schemeCategory20);
 
             var simulation = d3.forceSimulation()
-                .force('link', d3.forceLink().id(function(d) { return d.id; }))
+                .force('link', d3.forceLink().id(function(d) { return d.id; }).distance(30))
                 .force('charge', d3.forceManyBody())
                 .force('center', d3.forceCenter(width / 2, height / 2));
 
@@ -57,6 +59,28 @@
 
                 simulation.force('link')
                     .links(graph.links);
+
+                var timeoutId = null;
+                scope.$watchCollection('simulationParams', function(newVal, oldVal) {
+                    $timeout.cancel(timeoutId);
+
+                    timeoutId = $timeout(function() {
+                        simulation
+                            .force('link', d3.forceLink().id(function(d) { return d.id; }).distance(newVal.lineDistance))
+                            .force('charge', d3.forceManyBody())
+                            .force('center', d3.forceCenter(width / 2, height / 2));
+
+                        node.append('title')
+                            .text(function(d) { return d.id; });
+
+                        simulation
+                            .force('link')
+                            .links(graph.links);
+
+                        // Should set the alphaTarget back to 0 somehow
+                        simulation.alphaTarget(0.3).restart();
+                    }, 500);
+                });
 
                 function ticked() {
                     link
