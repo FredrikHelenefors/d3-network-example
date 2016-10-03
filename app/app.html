@@ -1,4 +1,22 @@
-<svg he-graph simulation-params="vm.simulationParams" style="border: 1px solid black;" width="960" height="600"></svg>
+<svg he-graph graph-data="vm.graphData" simulation-params="vm.simulationParams" style="border: 1px solid black;" width="960" height="600"></svg>
 
-<label for="lineDistance">Line Distance:</label>
-<input id="lineDistance" type="number" name="lineDistance" ng-model="vm.simulationParams.lineDistance" placeholder="Line Distance">
+<div>
+    <label for="lineDistance">Line Distance:</label>
+    <input id="lineDistance" type="number" name="lineDistance" ng-model="vm.simulationParams.lineDistance" placeholder="Line Distance">
+</div>
+
+<form novalidate name="vm.newNodeForm" ng-submit="vm.addNode()">
+    <div>
+        <label for="newNodeId">New Node Id:</label>
+        <input id="newNodeId" type="text" name="newNodeId" required ng-model="vm.newNode.id" placeholder="New Node Id">
+    </div>
+
+    <div>
+        <label for="newNodeGroup">New Node Group:</label>
+        <select id="newNodeGroup" name="newNodeGroup" required ng-model="vm.newNode.group" ng-options="group as group for group in vm.groups">
+            <option value="">Select</option>
+        </select>
+    </div>
+
+    <button type="submit">Add</button>
+</form>
