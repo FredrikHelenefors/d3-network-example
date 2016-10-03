@@ -5,7 +5,7 @@
             simulation-params="vm.simulationParams"
             class="col-xs-6 svg"></svg>
 
-        <div class="col-xs-offset-6 col-xs-6 col-lg-3 form-horizontal">
+        <div class="col-xs-offset-6 col-xs-6 col-lg-4 form-horizontal">
             <!-- SIMULATION PARAMS -->
             <h3 class="section-heading">
                 Simulation Parameters
@@ -129,7 +129,7 @@
             <h3 class="section-heading">
                 New Relationship
                 <button type="button" class="btn btn-default" ng-click="vm.manageSectionVisibility('newLink')">
-                    <span class="glyphicon glyphicon-{{vm.sectionsVisibility.newNode ? 'minus' : 'plus'}}" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-{{vm.sectionsVisibility.newLink ? 'minus' : 'plus'}}" aria-hidden="true"></span>
                 </button>
             </h3>
             <form ng-show="vm.sectionsVisibility.newLink" novalidate name="vm.newLinkForm" ng-submit="vm.addLink()">
