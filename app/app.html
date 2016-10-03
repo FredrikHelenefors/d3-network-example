@@ -1,22 +1,185 @@
-<svg he-graph graph-data="vm.graphData" simulation-params="vm.simulationParams" style="border: 1px solid black;" width="960" height="600"></svg>
+<div class="container-fluid">
+    <div class="row">
+        <svg he-graph
+            graph-data="vm.graphData"
+            simulation-params="vm.simulationParams"
+            class="col-xs-6 svg"></svg>
 
-<div>
-    <label for="lineDistance">Line Distance:</label>
-    <input id="lineDistance" type="number" name="lineDistance" ng-model="vm.simulationParams.lineDistance" placeholder="Line Distance">
+        <div class="col-xs-offset-6 col-xs-6 col-lg-3 form-horizontal">
+            <!-- SIMULATION PARAMS -->
+            <h3 class="section-heading">
+                Simulation Parameters
+                <button type="button" class="btn btn-default" ng-click="vm.manageSectionVisibility('simulationParameters')">
+                    <span class="glyphicon glyphicon-{{vm.sectionsVisibility.simulationParameters ? 'minus' : 'plus'}}" aria-hidden="true"></span>
+                </button>
+            </h3>
+            <div ng-show="vm.sectionsVisibility.simulationParameters">
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="lineDistance">Line Distance:</label>
+                    <div class="col-xs-7">
+                        <input class="form-control" type="range" id="lineDistance" name="lineDistance" ng-model="vm.simulationParams.lineDistance" step="1" min="0" max="100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="lineStrength">Line Strength:</label>
+                    <div class="col-xs-7">
+                        <input class="form-control" type="range" id="lineStrength" name="lineStrength" ng-model="vm.simulationParams.lineStrength" step="0.01" min="0" max="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="chargeStrength">Charge Strength:</label>
+                    <div class="col-xs-7">
+                        <input class="form-control" type="range" id="chargeStrength" name="chargeStrength" ng-model="vm.simulationParams.chargeStrength" step="1" min="-100" max="100">
+                    </div>
+                </div>
+            </div>
+            <!-- END SIMULATION PARAMS -->
+
+            <!-- NEW CHARACTER -->
+            <h3 class="section-heading">
+                New Character
+                <button type="button" class="btn btn-default" ng-click="vm.manageSectionVisibility('newNode')">
+                    <span class="glyphicon glyphicon-{{vm.sectionsVisibility.newNode ? 'minus' : 'plus'}}" aria-hidden="true"></span>
+                </button>
+            </h3>
+            <form ng-show="vm.sectionsVisibility.newNode" novalidate name="vm.newNodeForm" ng-submit="vm.addNode()">
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="newNodeId">Name:</label>
+                    <div class="col-xs-7">
+                        <input class="form-control"
+                            id="newNodeId"
+                            type="text"
+                            name="newNodeId"
+                            required
+                            ng-model="vm.newNode.id"
+                            placeholder="Character Name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="newNodeGroup">Group:</label>
+                    <div class="col-xs-7">
+                        <select class="form-control"
+                            id="newNodeGroup"
+                            name="newNodeGroup"
+                            required
+                            ng-model="vm.newNode.group"
+                            ng-options="group as group for group in vm.groups | orderBy:group">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h4>Relations of the New Character</h4>
+                <div ng-repeat="newLink in vm.newLinks track by $index">
+                    <h4 class="col-xs-offset-5 col-xs-7">
+                        #{{$index + 1}}
+                        <span ng-if="!$first"
+                            class="trash-button glyphicon glyphicon-trash"
+                            aria-hidden="true"
+                            ng-click="vm.removeLinkInputGroup($index)"></span>
+                    </h4>
+                    <div class="form-group text-center">
+                        <label class="radio-inline">
+                            <input required type="radio" name="newLinkDirection-{{$index}}" id="newLinkDirectionTo-{{$index}}" value="To" ng-model="newLink.direction"> To
+                        </label>
+                        <label class="radio-inline">
+                            <input required type="radio" name="newLinkDirection-{{$index}}" id="newLinkDirectionFrom-{{$index}}" value="From" ng-model="newLink.direction"> From
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-5 control-label" for="newLinkCharacter-{{$index}}">Character:</label>
+                        <div class="col-xs-7">
+                            <select class="form-control"
+                                id="newLinkCharacter-{{$index}}"
+                                name="newLinkCharacter-{{$index}}"
+                                required
+                                ng-model="newLink.id"
+                                ng-options="character as character for character in vm.characters | orderBy: character">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-5 control-label" for="newLinkStrokeWidth-{{$index}}">Relationship Strength:</label>
+                        <div class="col-xs-7">
+                            <input class="form-control"
+                                id="newLinkStrokeWidth-{{$index}}"
+                                type="number"
+                                name="newLinkStrokeWidth-{{$index}}"
+                                required
+                                ng-model="newLink.value"
+                                placeholder="Stroke Width">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <button class="btn btn-default" type="button" ng-click="vm.addLinkInputGroup()">+ Add Relationship</button>
+                    <button class="btn btn-primary" type="submit">Add Character</button>
+                </div>
+            </form>
+            <!-- END NEW CHARACTER -->
+
+            <!-- NEW RELATIONSHIP -->
+            <h3 class="section-heading">
+                New Relationship
+                <button type="button" class="btn btn-default" ng-click="vm.manageSectionVisibility('newLink')">
+                    <span class="glyphicon glyphicon-{{vm.sectionsVisibility.newNode ? 'minus' : 'plus'}}" aria-hidden="true"></span>
+                </button>
+            </h3>
+            <form ng-show="vm.sectionsVisibility.newLink" novalidate name="vm.newLinkForm" ng-submit="vm.addLink()">
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="newLinkSource">From:</label>
+                    <div class="col-xs-7">
+                        <select class="form-control"
+                            id="newLinkSource"
+                            name="newLinkSource"
+                            required
+                            ng-model="vm.newLink.source"
+                            ng-options="character as character for character in vm.characters | orderBy: character">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="newLinkTarget">To:</label>
+                    <div class="col-xs-7">
+                        <select class="form-control"
+                            id="newLinkTarget"
+                            name="newLinkTarget"
+                            required
+                            ng-model="vm.newLink.target"
+                            ng-options="character as character for character in vm.characters | orderBy: character">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-5 control-label" for="newLinkStrokeWidth-{{$index}}">Relationship Strength:</label>
+                    <div class="col-xs-7">
+                        <input class="form-control"
+                            id="newLinkStrokeWidth-{{$index}}"
+                            type="number"
+                            name="newLinkStrokeWidth-{{$index}}"
+                            required
+                            ng-model="vm.newLink.value"
+                            placeholder="Stroke Width">
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <button class="btn btn-primary" type="submit">Add Relationship</button>
+                </div>
+            </form>
+            <!-- END NEW RELATIONSHIP -->
+
+        </div>
+    </div>
 </div>
-
-<form novalidate name="vm.newNodeForm" ng-submit="vm.addNode()">
-    <div>
-        <label for="newNodeId">New Node Id:</label>
-        <input id="newNodeId" type="text" name="newNodeId" required ng-model="vm.newNode.id" placeholder="New Node Id">
-    </div>
-
-    <div>
-        <label for="newNodeGroup">New Node Group:</label>
-        <select id="newNodeGroup" name="newNodeGroup" required ng-model="vm.newNode.group" ng-options="group as group for group in vm.groups">
-            <option value="">Select</option>
-        </select>
-    </div>
-
-    <button type="submit">Add</button>
-</form>

@@ -11,28 +11,31 @@
             link: link,
             scope: {
                 simulationParams: '<',
-                graphData: '<'
+                graphData: '='
             }
         };
 
         return directive;
 
         function link(scope, element) {
-            var svg = d3.select(element[0]),
-                width = +svg.attr('width'),
-                height = +svg.attr('height');
+            var svg = d3.select(element[0]);
+            var width = window.outerWidth / 2;
+            var height = window.outerHeight;
 
             var color = d3.scaleOrdinal(d3.schemeCategory20);
 
             var simulation = d3.forceSimulation()
-                .force('link', d3.forceLink().id(function(d) { return d.id; }).distance(30))
+                .force('link', d3.forceLink().id(function(d) { return d.id; }))
                 .force('charge', d3.forceManyBody())
                 .force('center', d3.forceCenter(width / 2, height / 2));
 
             var node = null;
             var link = null;
 
+            var timeoutId = null;
+
             scope.$watchCollection('graphData', redraw);
+            scope.$watchCollection('simulationParams', changeSimulationParams);
 
             function redraw() {
                 svg.selectAll('*').remove();
@@ -51,23 +54,7 @@
                     .enter().append('circle')
                     .attr('r', 5)
                     .attr('fill', function(d) { return color(d.group); })
-                    .on('dblclick', function(event) {
-                        scope.graphData.nodes.splice(event.index, 1);
-
-                        // Remove links connected with that node
-                        for (var i = scope.graphData.links.length - 1; i >= 0; i--) {
-                            var item = scope.graphData.links[i];
-                            console.log(item);
-
-                            if (item.target.id === event.id || item.source.id === event.id) {
-                                scope.graphData.links.splice(i, 1);
-                            }
-                        }
-
-                        // TODO: After clearing the links, remove the single nodes without links
-                        
-                        redraw();
-                    })
+                    .on('dblclick', removeNode)
                     .call(d3.drag()
                         .on('start', dragstarted)
                         .on('drag', dragged)
@@ -80,7 +67,8 @@
                     .nodes(scope.graphData.nodes)
                     .on('tick', ticked);
 
-                simulation.force('link')
+                simulation
+                    .force('link')
                     .links(scope.graphData.links);
             }
 
@@ -96,13 +84,16 @@
                     .attr('cy', function(d) { return d.y; });
             }
 
-            var timeoutId = null;
-            scope.$watchCollection('simulationParams', function(newVal, oldVal) {
-                $timeout.cancel(timeoutId);
+            function changeSimulationParams(newParams) {
+                // $timeout.cancel(timeoutId);
 
-                timeoutId = $timeout(function() {
+                // timeoutId = $timeout(function() {
                     simulation
-                        .force('link', d3.forceLink().id(function(d) { return d.id; }).distance(newVal.lineDistance));
+                        .force('link',  d3.forceLink()
+                                            .id(function(d) { return d.id; })
+                                            .distance(newParams.lineDistance)
+                                            .strength(newParams.lineStrength))
+                        .force('charge', d3.forceManyBody().strength(newParams.chargeStrength));
 
                     simulation
                         .force('link')
@@ -110,8 +101,23 @@
 
                     // TODO: Should set the alphaTarget back to 0 somehow
                     simulation.alphaTarget(0.3).restart();
-                }, 500);
-            });
+                // }, 500);
+            }
+
+            function removeNode(selectedNode) {
+                scope.graphData.nodes.splice(selectedNode.index, 1);
+
+                // Remove the links connected with that node
+                for (var i = scope.graphData.links.length - 1; i >= 0; i--) {
+                    var item = scope.graphData.links[i];
+
+                    if (item.target.id === selectedNode.id || item.source.id === selectedNode.id) {
+                        scope.graphData.links.splice(i, 1);
+                    }
+                }
+
+                redraw();
+            }
 
             function dragstarted(d) {
                 if (!d3.event.active) simulation.alphaTarget(0.3).restart();

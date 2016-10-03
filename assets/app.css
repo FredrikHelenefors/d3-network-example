@@ -1,3 +1,11 @@
+.svg {
+    border: 1px solid #000;
+    height: 100vh;
+    position: fixed !important;
+    left: 0;
+    top: 0;
+}
+
 .links line {
     stroke: #999;
     stroke-opacity: 0.6;
@@ -6,4 +14,15 @@
 .nodes circle {
     stroke: #fff;
     stroke-width: 1.5px;
+}
+
+.trash-button {
+    cursor: pointer;
+    font-size: 14px;
+    color: #ff0000;
+    margin-left: 5px;
+}
+
+.section-heading {
+    margin-top: 50px;
 }
