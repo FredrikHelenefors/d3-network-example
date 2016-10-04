@@ -15,6 +15,7 @@
     "angular-ui-router": "^0.3.1",
     "bootstrap": "^3.3.7",
     "d3": "^4.2.6",
+    "express": "^4.14.0",
     "gzippo": "^0.2.0"
   }
 }
